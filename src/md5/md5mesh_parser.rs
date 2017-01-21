@@ -201,11 +201,17 @@ named!(pub parse_vertex<&[u8], Vertex>,
 );
 
 named!(pub parse_vertices<&[u8], Vec<Vertex>>,
-    do_parse!(
-        ws!(tag!("numverts")) >>
-        ws!(parse_u32) >>
-        vertices: many0!(parse_vertex) >>
-        (vertices)
+    map!(
+        do_parse!(
+            ws!(tag!("numverts")) >>
+            ws!(parse_u32) >>
+            vertices: many0!(parse_vertex) >>
+            (vertices)
+        ),
+        |mut vertices : Vec<Vertex>| {
+            vertices.sort_by_key(|v| v.index);
+            vertices
+        }
     )
 );
 
@@ -219,11 +225,17 @@ named!(pub parse_triangle<&[u8], Triangle>,
 );
 
 named!(pub parse_triangles<&[u8], Vec<Triangle>>,
-    do_parse!(
-        ws!(tag!("numtris")) >>
-        ws!(parse_u32) >>
-        triangles: many0!(parse_triangle) >>
-        (triangles)
+    map!(
+        do_parse!(
+            ws!(tag!("numtris")) >>
+            ws!(parse_u32) >>
+            triangles: many0!(parse_triangle) >>
+            (triangles)
+        ),
+        |mut triangles : Vec<Triangle>| {
+            triangles.sort_by_key(|t| t.index);
+            triangles
+        }
     )
 );
 
@@ -256,11 +268,17 @@ named!(pub parse_weight<&[u8], Weight>,
 );
 
 named!(pub parse_weights<&[u8], Vec<Weight>>,
-    do_parse!(
-        ws!(tag!("numweights")) >>
-        ws!(parse_u32) >>
-        weights: many0!(parse_weight) >>
-        (weights)
+    map!(
+        do_parse!(
+            ws!(tag!("numweights")) >>
+            ws!(parse_u32) >>
+            weights: many0!(parse_weight) >>
+            (weights)
+        ),
+        |mut weights : Vec<Weight>| {
+            weights.sort_by_key(|w| w.index);
+            weights
+        }
     )
 );
 
