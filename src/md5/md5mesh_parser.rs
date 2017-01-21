@@ -158,16 +158,16 @@ named!(pub parse_quaternionf32<&[u8], Quaternion<f32>>,
     ws!(
         map!(
             parse_tuple3f32,
-            |(a, b, c)| {
-                let mut d = 1.0 - a * a - b * b - c * c;
-                if d < 0.0 { d = 0.0 };
+            |(x, y, z)| {
+                let mut scal = 1.0 - x * x - y * y - z * z;
+                if scal < 0.0 { scal = 0.0 };
                 Quaternion::<f32> {
-                    scal: a,
+                    scal: scal,
                     vec:
                         Vector3::<f32> {
-                            x: b,
-                            y: c,
-                            z: d
+                            x: x,
+                            y: y,
+                            z: z
                         }
                     }
             }
@@ -381,20 +381,20 @@ mod tests {
             	\"sheath\"	0 ( 1.100481 -0.317714 3.170247 ) ( 0.307041 -0.578615 0.354181 )		// comment
               }";
 
-        let joint1 =
-            Joint {
-                name: String::from("origin"),
-                parent_index: -1,
-                position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
-                orientation: Quaternion::<f32> {
-                    scal: -0.707107,
-                    vec: Vector3::<f32> {
-                        x: -0.000242,
-                        y: -0.707107,
-                        z: 0.0
-                    }
-                }
-            };
+          let joint1 =
+              Joint {
+                  name: String::from("origin"),
+                  parent_index: -1,
+                  position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
+                  orientation: Quaternion::<f32> {
+                      scal: 0.0,
+                      vec: Vector3::<f32> {
+                          x: -0.707107,
+                          y: -0.000242,
+                          z: -0.707107
+                      }
+                  }
+              };
 
         let joint2 =
             Joint {
@@ -402,11 +402,11 @@ mod tests {
                 parent_index: 0,
                 position: Vector3::<f32> { x: 1.100481, y: -0.317714, z: 3.170247 },
                 orientation: Quaternion::<f32> {
-                    scal: 0.307041,
+                    scal: 0.4454863,
                     vec: Vector3::<f32> {
-                        x: -0.578615,
-                        y: 0.354181,
-                        z: 0.4454863
+                        x: 0.307041,
+                        y: -0.578615,
+                        z: 0.354181
                     }
                 }
             };
@@ -514,11 +514,11 @@ mod tests {
                 parent_index: -1,
                 position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
                 orientation: Quaternion::<f32> {
-                    scal: -0.707107,
+                    scal: 0.0,
                     vec: Vector3::<f32> {
-                        x: -0.000242,
-                        y: -0.707107,
-                        z: 0.0
+                        x: -0.707107,
+                        y: -0.000242,
+                        z: -0.707107
                     }
                 }
             };
