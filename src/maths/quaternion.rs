@@ -1,10 +1,10 @@
 use maths::vector3::Vector3;
 use std::ops::{Add, Sub, Mul};
 
-#[derive(PartialEq, Eq, Debug)]
-struct Quaternion<T> {
-    scal: T,
-    vec: Vector3<T>
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub struct Quaternion<T> {
+    pub scal: T,
+    pub vec: Vector3<T>
 }
 
 //Definition of operators on quaternions

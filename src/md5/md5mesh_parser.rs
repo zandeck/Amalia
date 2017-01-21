@@ -1,7 +1,8 @@
-use std::str;
+use std::{str, cmp};
 use std::str::FromStr;
 use maths::vector3::Vector3;
 use maths::vector2::Vector2;
+use maths::quaternion::Quaternion;
 use nom::{digit, multispace};
 use md5::md5mesh::{Md5Mesh, Joint, Vertex, Mesh, Triangle, Weight};
 
@@ -153,6 +154,27 @@ named!(pub parse_vector3f32<&[u8], Vector3<f32>>,
     )
 );
 
+named!(pub parse_quaternionf32<&[u8], Quaternion<f32>>,
+    ws!(
+        map!(
+            parse_tuple3f32,
+            |(a, b, c)| {
+                let mut d = 1.0 - a * a - b * b - c * c;
+                if d < 0.0 { d = 0.0 };
+                Quaternion::<f32> {
+                    scal: a,
+                    vec:
+                        Vector3::<f32> {
+                            x: b,
+                            y: c,
+                            z: d
+                        }
+                    }
+            }
+        )
+    )
+);
+
 named!(pub parse_joints<&[u8], Vec<Joint>>,
     preceded!(
         tag!("joints"),
@@ -166,7 +188,7 @@ named!(pub parse_joints<&[u8], Vec<Joint>>,
                     position: ws!(parse_vector3f32) >>
                     ws!(tag!(")")) >>
                     ws!(tag!("(")) >>
-                    orientation: ws!(parse_vector3f32) >>
+                    orientation: ws!(parse_quaternionf32) >>
                     ws!(tag!(")")) >>
                     opt!(comments) >>
                     (Joint {
@@ -337,6 +359,7 @@ mod tests {
     use std::str::FromStr;
     use maths::vector3::Vector3;
     use maths::vector2::Vector2;
+    use maths::quaternion::Quaternion;
     use nom::{digit, alphanumeric, multispace, anychar, be_u8, line_ending, be_f32};
     use md5::md5mesh::{Md5Mesh, Joint, Vertex, Mesh, Triangle, Weight};
 
@@ -347,7 +370,7 @@ mod tests {
             commandline \"Exported from Blender by io_export_md5.py by Paul Zirkle\"";
 
         let header = (10, String::from("Exported from Blender by io_export_md5.py by Paul Zirkle"));
-        assert_eq!(::parse_header(string), Done(&b""[..], header));
+        assert_eq!(super::parse_header(string), Done(&b""[..], header));
     }
 
     #[test]
@@ -363,7 +386,14 @@ mod tests {
                 name: String::from("origin"),
                 parent_index: -1,
                 position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
-                orientation: Vector3::<f32> { x: -0.707107, y: -0.000242, z: -0.707107 }
+                orientation: Quaternion::<f32> {
+                    scal: -0.707107,
+                    vec: Vector3::<f32> {
+                        x: -0.000242,
+                        y: -0.707107,
+                        z: 0.0
+                    }
+                }
             };
 
         let joint2 =
@@ -371,12 +401,19 @@ mod tests {
                 name: String::from("sheath"),
                 parent_index: 0,
                 position: Vector3::<f32> { x: 1.100481, y: -0.317714, z: 3.170247 },
-                orientation: Vector3::<f32> { x: 0.307041, y: -0.578615, z: 0.354181 }
+                orientation: Quaternion::<f32> {
+                    scal: 0.307041,
+                    vec: Vector3::<f32> {
+                        x: -0.578615,
+                        y: 0.354181,
+                        z: 0.4454863
+                    }
+                }
             };
 
         let joints = vec![joint1, joint2];
 
-        assert_eq!(::parse_joints(string), Done(&b""[..], joints));
+        assert_eq!(super::parse_joints(string), Done(&b""[..], joints));
     }
 
     #[test]
@@ -391,7 +428,7 @@ mod tests {
                 weight_count: 3
             };
 
-        assert_eq!(::parse_vertex(string), Done(&b""[..], vertex));
+        assert_eq!(super::parse_vertex(string), Done(&b""[..], vertex));
     }
 
     #[test]
@@ -440,7 +477,7 @@ mod tests {
                 weights: vec![weight]
             };
 
-        assert_eq!(::parse_mesh(string), Done(&b""[..], mesh));
+        assert_eq!(super::parse_mesh(string), Done(&b""[..], mesh));
     }
 
     #[test]
@@ -476,7 +513,14 @@ mod tests {
                 name: String::from("origin"),
                 parent_index: -1,
                 position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
-                orientation: Vector3::<f32> { x: -0.707107, y: -0.000242, z: -0.707107 }
+                orientation: Quaternion::<f32> {
+                    scal: -0.707107,
+                    vec: Vector3::<f32> {
+                        x: -0.000242,
+                        y: -0.707107,
+                        z: 0.0
+                    }
+                }
             };
 
         let vertex =
@@ -517,6 +561,6 @@ mod tests {
                 meshes: vec![mesh]
             };
 
-        assert_eq!(::parse_md5mesh(string), Done(&b""[..], md5mesh));
+        assert_eq!(super::parse_md5mesh(string), Done(&b""[..], md5mesh));
     }
 }

@@ -1,12 +1,13 @@
 use maths::vector2::Vector2;
 use maths::vector3::Vector3;
+use maths::quaternion::Quaternion;
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Joint {
     pub name: String,
     pub parent_index: i32,
     pub position: Vector3<f32>,
-    pub orientation: Vector3<f32>
+    pub orientation: Quaternion<f32>
 }
 
 #[derive(Clone, PartialEq, Debug)]
