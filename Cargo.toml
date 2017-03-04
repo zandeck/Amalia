@@ -10,3 +10,4 @@ name = "amalia"
 [dependencies]
 glium = "*"
 nom = "^2.0"
+cgmath= "*"

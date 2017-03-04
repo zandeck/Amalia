@@ -1,6 +1,5 @@
-use maths::vector2::Vector2;
-use maths::vector3::Vector3;
-use maths::quaternion::Quaternion;
+extern crate cgmath;
+use cgmath::{Vector3, Vector2, Quaternion};
 
 #[derive(Clone, PartialEq, Debug)]
 pub struct Joint {
