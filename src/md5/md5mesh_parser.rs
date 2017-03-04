@@ -1,8 +1,5 @@
-use std::{str, cmp};
+use std::str;
 use std::str::FromStr;
-use maths::vector3::Vector3;
-use maths::vector2::Vector2;
-use maths::quaternion::Quaternion;
 use nom::{digit, multispace};
 use md5::md5mesh::{Md5Mesh, Joint, Vertex, Mesh, Triangle, Weight};
 use md5::md5common_parser::*;
@@ -39,12 +36,8 @@ named!(pub parse_joints<&[u8], Vec<Joint>>,
                 do_parse!(
                     name: ws!(escaped_string) >>
                     parent_index: ws!(parse_i32) >>
-                    ws!(tag!("(")) >>
                     position: ws!(parse_vector3f32) >>
-                    ws!(tag!(")")) >>
-                    ws!(tag!("(")) >>
                     orientation: ws!(parse_quaternionf32) >>
-                    ws!(tag!(")")) >>
                     opt!(comments) >>
                     (Joint {
                         name: name,
@@ -63,9 +56,7 @@ named!(pub parse_vertex<&[u8], Vertex>,
     do_parse!(
         ws!(tag!("vert")) >>
         index: ws!(parse_u32) >>
-        ws!(tag!("(")) >>
         tex_coords: ws!(parse_vector2f32) >>
-        ws!(tag!(")")) >>
         start_weight: ws!(parse_u32) >>
         weight_count: ws!(parse_u32) >>
         (Vertex {
@@ -137,9 +128,7 @@ named!(pub parse_weight<&[u8], Weight>,
         index: ws!(parse_u32) >>
         joint_index: ws!(parse_u32) >>
         bias: ws!(parse_bias) >>
-        ws!(tag!("(")) >>
         position: ws!(parse_vector3f32) >>
-        ws!(tag!(")")) >>
         (Weight {index: index, joint_index: joint_index, bias: bias, position: position})
     )
 );
@@ -209,13 +198,11 @@ named!(pub parse_md5mesh<&[u8], Md5Mesh>,
 
 #[cfg(test)]
 mod tests {
+    extern crate cgmath;
+
     use nom::IResult::Done;
     use std::str;
-    use std::str::FromStr;
-    use maths::vector3::Vector3;
-    use maths::vector2::Vector2;
-    use maths::quaternion::Quaternion;
-    use nom::{digit, alphanumeric, multispace, anychar, be_u8, line_ending, be_f32};
+    use cgmath::{Vector3, Vector2, Quaternion};
     use md5::md5mesh::{Md5Mesh, Joint, Vertex, Mesh, Triangle, Weight};
 
     #[test]
@@ -240,30 +227,16 @@ mod tests {
               Joint {
                   name: String::from("origin"),
                   parent_index: -1,
-                  position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
-                  orientation: Quaternion::<f32> {
-                      scal: 0.0,
-                      vec: Vector3::<f32> {
-                          x: -0.707107,
-                          y: -0.000242,
-                          z: -0.707107
-                      }
-                  }
+                  position: Vector3::new(-0.000000, 0.001643, -0.000604),
+                  orientation: Quaternion::new(0.0, -0.707107, -0.000242, -0.707107)
               };
 
         let joint2 =
             Joint {
                 name: String::from("sheath"),
                 parent_index: 0,
-                position: Vector3::<f32> { x: 1.100481, y: -0.317714, z: 3.170247 },
-                orientation: Quaternion::<f32> {
-                    scal: 0.4454863,
-                    vec: Vector3::<f32> {
-                        x: 0.307041,
-                        y: -0.578615,
-                        z: 0.354181
-                    }
-                }
+                position: Vector3::new(1.100481, -0.317714, 3.170247),
+                orientation: Quaternion::new(0.4454863, 0.307041, -0.578615, 0.354181)
             };
 
         let joints = vec![joint1, joint2];
@@ -278,7 +251,7 @@ mod tests {
         let vertex =
             Vertex {
                 index: 0,
-                tex_coords: Vector2::<f32> {x: 0.683594, y: 0.455078},
+                tex_coords: Vector2::new(0.683594, 0.455078),
                 start_weight: 0,
                 weight_count: 3
             };
@@ -305,7 +278,7 @@ mod tests {
         let vertex =
             Vertex {
                 index: 0,
-                tex_coords: Vector2::<f32> {x: 0.683594, y: 0.455078},
+                tex_coords: Vector2::new(0.683594, 0.455078),
                 start_weight: 0,
                 weight_count: 3
             };
@@ -321,7 +294,7 @@ mod tests {
                 index: 0,
                 joint_index: 16,
                 bias: 0.333333,
-                position: Vector3::<f32> { x: -0.194917, y: 0.111128, z: -0.362937 }
+                position: Vector3::new(-0.194917, 0.111128, -0.362937)
             };
 
         let mesh =
@@ -368,20 +341,13 @@ mod tests {
                 name: String::from("origin"),
                 parent_index: -1,
                 position: Vector3::<f32> { x: -0.000000, y: 0.001643, z: -0.000604 },
-                orientation: Quaternion::<f32> {
-                    scal: 0.0,
-                    vec: Vector3::<f32> {
-                        x: -0.707107,
-                        y: -0.000242,
-                        z: -0.707107
-                    }
-                }
+                orientation: Quaternion::new(0.0, -0.707107, -0.000242, -0.707107)
             };
 
         let vertex =
             Vertex {
                 index: 0,
-                tex_coords: Vector2::<f32> {x: 0.683594, y: 0.455078},
+                tex_coords: Vector2::new(0.683594, 0.455078),
                 start_weight: 0,
                 weight_count: 3
             };
@@ -397,7 +363,7 @@ mod tests {
                 index: 0,
                 joint_index: 16,
                 bias: 0.333333,
-                position: Vector3::<f32> { x: -0.194917, y: 0.111128, z: -0.362937 }
+                position: Vector3::new(-0.194917, 0.111128, -0.362937)
             };
 
         let mesh =

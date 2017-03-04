@@ -1,9 +1,9 @@
-use std::{str, cmp};
+extern crate cgmath;
+
+use cgmath::{Vector2, Vector3, Quaternion};
+use std::str;
 use std::str::FromStr;
-use maths::vector3::Vector3;
-use maths::vector2::Vector2;
-use maths::quaternion::Quaternion;
-use nom::{digit, multispace};
+use nom::{digit};
 
 named!(pub escaped_string<&[u8], String>,
     map_res!(
@@ -93,9 +93,11 @@ named!(pub parse_f32<&[u8], f32>,
 named!(pub parse_vector2f32<&[u8], Vector2<f32>>,
     ws!(
         do_parse!(
+            opt!(tag!("(")) >>
             x: ws!(parse_f32) >>
             y: ws!(parse_f32) >>
-            (Vector2::<f32> {x: x, y: y})
+            opt!(tag!(")")) >>
+            (Vector2::new(x, y))
         )
     )
 );
@@ -114,9 +116,11 @@ named!(pub parse_tuple3u32<&[u8], (u32, u32, u32)>,
 named!(pub parse_tuple3f32<&[u8], (f32, f32, f32)>,
     ws!(
         do_parse!(
+            opt!(tag!("(")) >>
             a: ws!(parse_f32) >>
             b: ws!(parse_f32) >>
             c: ws!(parse_f32) >>
+            opt!(tag!(")")) >>
             (a, b, c)
         )
     )
@@ -127,7 +131,7 @@ named!(pub parse_vector3f32<&[u8], Vector3<f32>>,
         map!(
             parse_tuple3f32,
             |(a, b, c)| {
-                Vector3::<f32> {x: a, y: b, z: c}
+                Vector3::new(a, b, c)
             }
         )
     )
@@ -140,15 +144,7 @@ named!(pub parse_quaternionf32<&[u8], Quaternion<f32>>,
             |(x, y, z)| {
                 let mut scal = 1.0 - x * x - y * y - z * z;
                 if scal < 0.0 { scal = 0.0 };
-                Quaternion::<f32> {
-                    scal: scal,
-                    vec:
-                        Vector3::<f32> {
-                            x: x,
-                            y: y,
-                            z: z
-                        }
-                    }
+                Quaternion::new(scal, x, y, z) 
             }
         )
     )
