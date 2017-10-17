@@ -1,9 +1,10 @@
+extern crate nom;
 extern crate cgmath;
 
 use cgmath::{Vector2, Vector3, Quaternion};
 use std::str;
 use std::str::FromStr;
-use nom::{digit};
+use nom::digit;
 
 named!(pub escaped_string<&[u8], String>,
     map_res!(

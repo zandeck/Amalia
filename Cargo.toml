@@ -4,10 +4,10 @@ name = "Amalia"
 version = "0.0.1"
 authors = [ "antoine.allioux@gmail.com" ]
 
-[lib]
+[[bin]]
 name = "amalia"
+path = "src/main.rs"
 
 [dependencies]
-glium = "*"
 nom = "^2.0"
 cgmath= "*"
