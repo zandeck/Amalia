@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 extern crate cgmath;
 
 use md5::md5common_parser::*;

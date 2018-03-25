@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::str;
 use std::str::FromStr;
 use nom::{digit, multispace};

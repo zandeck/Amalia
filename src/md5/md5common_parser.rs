@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 extern crate nom;
 extern crate cgmath;
 
@@ -5,6 +6,7 @@ use cgmath::{Vector2, Vector3, Quaternion};
 use std::str;
 use std::str::FromStr;
 use nom::digit;
+use std::f32;
 
 named!(pub escaped_string<&[u8], String>,
     map_res!(
@@ -143,9 +145,9 @@ named!(pub parse_quaternionf32<&[u8], Quaternion<f32>>,
         map!(
             parse_tuple3f32,
             |(x, y, z)| {
-                let mut scal = 1.0 - x * x - y * y - z * z;
+                let mut scal : f32= 1.0 - x * x - y * y - z * z;
                 if scal < 0.0 { scal = 0.0 };
-                Quaternion::new(scal, x, y, z) 
+                Quaternion::new(-scal.sqrt(), x, y, z) 
             }
         )
     )

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 extern crate cgmath;
 
 use cgmath::{Vector3, Quaternion};

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use cgmath::{Vector3, Vector2, Quaternion};
 
 #[derive(Clone, PartialEq, Debug)]
